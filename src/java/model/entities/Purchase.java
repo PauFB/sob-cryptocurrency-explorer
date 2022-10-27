@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -16,7 +17,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 public class Purchase implements java.io.Serializable {
 
     @Id
-    @SequenceGenerator(name="Purchase_Gen", allocationSize=1)
+    @SequenceGenerator(name = "Purchase_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Purchase_Gen")
     public long id;
 
@@ -24,14 +25,14 @@ public class Purchase implements java.io.Serializable {
     private float coinAmount;
     private Date date;
 
-    //TODO Still have to implement the foreign keys to client and coin.
     @ManyToOne
     private Customer customer;
 
-    //@OneToMany(mappedBy="purchases")
+    @OneToOne
     private Coin coin;
 
-    public Purchase() {}
+    public Purchase() {
+    }
 
     public Purchase(double pricePerCoin, float coinAmount, Date date) {
         this.pricePerCoin = pricePerCoin;
@@ -39,26 +40,40 @@ public class Purchase implements java.io.Serializable {
         this.date = (Date) date.clone();
     }
 
-    public float getCoinAmount() {
-        return coinAmount;
+    public long getId() {
+        return id;
     }
 
-    public Date getDate() {
-        return date;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public double getPricePerCoin() {
         return pricePerCoin;
     }
 
-    public void setCustomer(Customer customer) {
-        if (this.customer == null) {
-            this.customer = customer;
-        }
+    public void setPricePerCoin(double pricePerCoin) {
+        this.pricePerCoin = pricePerCoin;
+    }
+
+    public float getCoinAmount() {
+        return coinAmount;
+    }
+
+    public void setCoinAmount(float coinAmount) {
+        this.coinAmount = coinAmount;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public Customer getCustomer() {
-        return this.customer;
+        return customer;
     }
 
     public Coin getCoin() {
@@ -66,8 +81,6 @@ public class Purchase implements java.io.Serializable {
     }
 
     public void setCoin(Coin coin) {
-        if (this.coin == null) {
-            this.coin = coin;
-        }
+        this.coin = coin;
     }
 }

@@ -17,7 +17,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 public class Coin implements java.io.Serializable {
 
     @Id
-    @SequenceGenerator(name="Coin_Gen", allocationSize=1)
+    @SequenceGenerator(name = "Coin_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Coin_Gen")
     private long id;
 
@@ -40,19 +40,43 @@ public class Coin implements java.io.Serializable {
     }
 
     public long getId() {
-        return this.id;
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getCoinName() {
         return coinName;
     }
 
+    public void setCoinName(String coinName) {
+        this.coinName = coinName;
+    }
+
     public double getActualPrice() {
         return actualPrice;
     }
 
+    public void setActualPrice(double actualPrice) {
+        this.actualPrice = actualPrice;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Collection<Purchase> getPurchases() {
+        return purchases;
+    }
+
+    public void setPurchases(Collection<Purchase> purchases) {
+        this.purchases = purchases;
     }
 
     public void addPurchase(Purchase purchase) {
