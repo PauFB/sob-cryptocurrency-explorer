@@ -4,8 +4,8 @@ import jakarta.ws.rs.core.Application;
 import java.util.Set;
 import java.util.HashSet;
 
-import resources.HelloWorldResourceV2;
-import resources.ParrotResource;
+import webresources.HelloWorldResourceV2;
+import webresources.ParrotResource;
 
 @jakarta.ws.rs.ApplicationPath("/rest/api/v2")
 public class RESTappV2 extends Application {

@@ -1,85 +1,96 @@
 package model.entities;
 
+import jakarta.persistence.Column;
 import java.util.ArrayList;
 import java.util.Collection;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 @Entity
 @XmlRootElement
 public class Coin implements java.io.Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
     @SequenceGenerator(name = "Coin_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Coin_Gen")
-    private long id;
-
-    private String coinName;
-    private double actualPrice;
+    private int id;
     private String description;
-
-    @OneToMany
-    private Collection<Purchase> purchases;
+    private String name;
+    private float price;
+    private Date priceTimestamp;
+    @ManyToMany
+    private Collection<Customer> customers;
+    @OneToOne(mappedBy = "coin")
+    private Purchase purchase;
 
     public Coin() {
-        this.purchases = new ArrayList<>();
     }
 
-    public Coin(String coinName, double actualPrice, String description) {
-        this.coinName = coinName;
-        this.actualPrice = actualPrice;
+    public Coin(String name, String description, float price, Date priceTimestamp) {
+        this.name = name;
         this.description = description;
-        this.purchases = new ArrayList<>();
+        this.price = price;
+        this.priceTimestamp = priceTimestamp;
+        this.customers = new ArrayList<>();
     }
 
-    public long getId() {
-        return id;
+    public int getId() {
+        return this.id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getCoinName() {
-        return coinName;
+    public String getName() {
+        return this.name;
     }
 
-    public void setCoinName(String coinName) {
-        this.coinName = coinName;
-    }
-
-    public double getActualPrice() {
-        return actualPrice;
-    }
-
-    public void setActualPrice(double actualPrice) {
-        this.actualPrice = actualPrice;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public Collection<Purchase> getPurchases() {
-        return purchases;
+    public float getPrice() {
+        return this.price;
     }
 
-    public void setPurchases(Collection<Purchase> purchases) {
-        this.purchases = purchases;
+    public void setPrice(float price) {
+        this.price = price;
     }
 
-    public void addPurchase(Purchase purchase) {
-        this.purchases.add(purchase);
+    public Date getPriceTimestamp() {
+        return this.priceTimestamp;
     }
+
+    public void setPriceTimestamp(Date priceTimestamp) {
+        this.priceTimestamp = priceTimestamp;
+    }
+
+    public void addCustomer(Customer customer) {
+        this.customers.add(customer);
+    }
+
+    @Override
+    public String toString() {
+        return ("Name: " + this.name + " Description: " + this.description + " Price: " + this.price + " Price timestamp:" + this.priceTimestamp);
+    }
+
 }

@@ -1,86 +1,86 @@
 package model.entities;
 
-import java.util.Date;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 @Entity
 @XmlRootElement
 public class Purchase implements java.io.Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
     @SequenceGenerator(name = "Purchase_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Purchase_Gen")
-    public long id;
-
-    private double pricePerCoin;
-    private float coinAmount;
+    private int id;
+    private float amount;
     private Date date;
-
-    @ManyToOne
-    private Customer customer;
-
     @OneToOne
     private Coin coin;
+    @ManyToOne
+    private Customer customer;
 
     public Purchase() {
     }
 
-    public Purchase(double pricePerCoin, float coinAmount, Date date) {
-        this.pricePerCoin = pricePerCoin;
-        this.coinAmount = coinAmount;
-        this.date = (Date) date.clone();
+    public Purchase(Date datePurchase, float amount, Customer customer, Coin coin) {
+        this.date = datePurchase;
+        this.amount = amount;
+        this.customer = customer;
+        this.coin = coin;
     }
 
-    public long getId() {
-        return id;
+    public int getId() {
+        return this.id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public double getPricePerCoin() {
-        return pricePerCoin;
-    }
-
-    public void setPricePerCoin(double pricePerCoin) {
-        this.pricePerCoin = pricePerCoin;
-    }
-
-    public float getCoinAmount() {
-        return coinAmount;
-    }
-
-    public void setCoinAmount(float coinAmount) {
-        this.coinAmount = coinAmount;
-    }
-
     public Date getDate() {
-        return date;
+        return this.date;
     }
 
     public void setDate(Date date) {
         this.date = date;
     }
 
+    public float getAmount() {
+        return this.amount;
+    }
+
+    public void setAmount(float amount) {
+        this.amount = amount;
+    }
+
     public Customer getCustomer() {
-        return customer;
+        return this.customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public Coin getCoin() {
-        return coin;
+        return this.coin;
     }
 
     public void setCoin(Coin coin) {
         this.coin = coin;
     }
+
+    @Override
+    public String toString() {
+        return ("Date: " + this.date + " Amount: " + this.amount + " Customer: " + this.customer + " Coin:" + this.coin);
+    }
+
 }
