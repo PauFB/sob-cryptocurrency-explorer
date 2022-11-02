@@ -15,6 +15,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.entities.Comment;
 import authn.Secured;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
 @Stateless

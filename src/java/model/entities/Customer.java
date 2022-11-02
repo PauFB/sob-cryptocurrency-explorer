@@ -25,7 +25,9 @@ public class Customer implements java.io.Serializable {
     private int id;
     private String email;
     private String name;
+    
     private String password;
+    
     private String phone;
     @ManyToMany(mappedBy = "customers")
     final private Collection<Coin> coins;

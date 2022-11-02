@@ -15,6 +15,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.entities.Customer;
 import authn.Secured;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
 @Stateless
@@ -38,13 +39,13 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Long id, Customer entity) {
+    public void edit(@PathParam("id") int id, Customer entity) {
         super.edit(entity);
     }
 
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") Long id) {
+    public void remove(@PathParam("id") int id) {
         super.remove(super.find(id));
     }
 
@@ -52,15 +53,23 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @Secured
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response find(@PathParam("id") Long id) {
+    public Response find(@PathParam("id") int id) {
         return Response.ok().entity(super.find(id)).build();
     }
 
-    @GET
+    /*@GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Customer> findAll() {
         return super.findAll();
+    }*/
+    
+    @GET
+    @Override
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List findAll(){
+        String query = "SELECT c.id, c.email, c.name, c.phone FROM Customer c";
+        return em.createQuery(query).getResultList();
     }
 
     @GET
@@ -69,7 +78,14 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     public List<Customer> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
-
+    
+    @GET
+    @Produces("text/plain")
+    @Path("prove?{testName}")
+    public String proveMessage(@PathParam("testName") String name) {
+        return "Yo " + name;
+    }
+    
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)

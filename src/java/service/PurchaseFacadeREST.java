@@ -15,6 +15,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.entities.Purchase;
 import authn.Secured;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
 @Stateless
@@ -38,13 +39,13 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Long id, Purchase entity) {
+    public void edit(@PathParam("id") int id, Purchase entity) {
         super.edit(entity);
     }
 
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") Long id) {
+    public void remove(@PathParam("id") int id) {
         super.remove(super.find(id));
     }
 
@@ -52,7 +53,7 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
     @Secured
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response find(@PathParam("id") Long id) {
+    public Response find(@PathParam("id") int id) {
         return Response.ok().entity(super.find(id)).build();
     }
 

@@ -40,8 +40,14 @@
                 "INSERT INTO " + schema + ".COMMENT VALUES (NEXT VALUE FOR COMMENT_GEN, 'Skeleton code', 1)",
                 "INSERT INTO " + schema + ".COMMENT VALUES (NEXT VALUE FOR COMMENT_GEN, 'for homework1', 1)",
                 "INSERT INTO " + schema + ".CREDENTIALS VALUES (NEXT VALUE FOR CREDENTIALS_GEN, 'sob', 'sob')",
-                "INSERT INTO " + schema + ".CUSTOMER VALUES (NEXT VALUE FOR CUSTOMER_GEN, 'address@nonexistent.com', 'Name Surname', 'password1234', '123456789')",
-                "INSERT INTO " + schema + ".COIN VALUES (NEXT VALUE FOR COIN_GEN, 'Generic description.', 'Bitcoin', 50000.0, '2000-1-1-12.00.00.000000')",
+                "INSERT INTO " + schema + ".CUSTOMER VALUES (NEXT VALUE FOR CUSTOMER_GEN, 'address1@nonexistent.com', 'Juan Martin', 'password1234', '726184627')",
+                "INSERT INTO " + schema + ".CUSTOMER VALUES (NEXT VALUE FOR CUSTOMER_GEN, 'address2@nonexistent.com', 'Pedro Losano', 'password1234', '817364526')",
+                "INSERT INTO " + schema + ".CUSTOMER VALUES (NEXT VALUE FOR CUSTOMER_GEN, 'address3@nonexistent.com', 'Jaime Perez', 'password1234', '847163261')",
+                "INSERT INTO " + schema + ".CUSTOMER VALUES (NEXT VALUE FOR CUSTOMER_GEN, 'address4@nonexistent.com', 'Andres Silva', 'password1234', '172846127')",
+                "INSERT INTO " + schema + ".COIN VALUES (NEXT VALUE FOR COIN_GEN, 'Generic description.', 'Bitcoin', 500000.0, '2000-1-1-12.00.00.000000')",
+                "INSERT INTO " + schema + ".COIN VALUES (NEXT VALUE FOR COIN_GEN, 'Generic description.', 'ethereum', 30000.0, '2000-1-1-12.00.00.000000')",
+                "INSERT INTO " + schema + ".COIN VALUES (NEXT VALUE FOR COIN_GEN, 'Generic description.', 'NicoCoin', 400000.0, '2000-1-1-12.00.00.000000')",
+                "INSERT INTO " + schema + ".COIN VALUES (NEXT VALUE FOR COIN_GEN, 'Generic description.', 'PauCoin', 600000.0, '2000-1-1-12.00.00.000000')",
                 "INSERT INTO " + schema + ".PURCHASE VALUES (NEXT VALUE FOR PURCHASE_GEN, 1000.0, '2014-07-02 06:14:00.742000000', 1, 1)"
             };
             for (String datum : data) {
