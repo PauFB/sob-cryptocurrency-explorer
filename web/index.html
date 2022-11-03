@@ -33,5 +33,39 @@
         <div class="centered w3-row">
             <a href="install.jsp"  class="w3-button w3-white w3-border w3-border-red w3-round-large w3-xlarge"> Insert </a>
         </div>
+        <form name="signup_customer_form">
+            Name <input type="text" name="name_input">
+            <br>
+            E-mail <input type="text" name="email_input">
+            <br>
+            Password <input type="password" name="password_input">
+            <br>
+            Phone number <input type="number" name="phone_input">
+            <br>
+            <input type="button" value="Sign up" onClick="signUpCustomer()">
+        </form>
+        <script>
+            function signUpCustomer() {
+                let req = new XMLHttpRequest();
+                req.open("POST", "http://localhost:8080/sob-cryptocurrency-explorer/rest/api/v1/customer");
+                req.setRequestHeader("Content-Type", "application/json");
+                req.onreadystatechange = function() {
+                    if (req.readyState === XMLHttpRequest.DONE) {
+                        if (req.responseText === "")
+                            window.alert("Sign up successful.");
+                        else
+                            window.alert("Error.");
+                    }
+                };
+                let body =
+                        `{
+                            "email": "${document.signup_customer_form.email_input.value}",
+                            "name": "${document.signup_customer_form.name_input.value}",
+                            "password": "${document.signup_customer_form.password_input.value}",
+                            "phone": "${document.signup_customer_form.phone_input.value}"
+                        }`;
+                req.send(body);
+            }
+        </script>
     </body>
 </html>

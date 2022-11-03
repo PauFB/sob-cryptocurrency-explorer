@@ -23,11 +23,10 @@ public class Customer implements java.io.Serializable {
     @SequenceGenerator(name = "Customer_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Customer_Gen")
     private int id;
+    @Column(unique=true)
     private String email;
     private String name;
-    
     private String password;
-    
     private String phone;
     @ManyToMany(mappedBy = "customers")
     final private Collection<Coin> coins;

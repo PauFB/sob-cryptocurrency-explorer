@@ -15,7 +15,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.entities.Coin;
 import authn.Secured;
-import jakarta.ws.rs.MatrixParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -62,29 +61,23 @@ public class CoinFacadeREST extends AbstractFacade<Coin> {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, "text/plain"})
     public Response findAll(@QueryParam("order") String order) {
-        
+
         java.util.List<Coin> listResult = new java.util.ArrayList<Coin>();
         jakarta.persistence.criteria.CriteriaBuilder cb = em.getCriteriaBuilder();
         jakarta.persistence.criteria.CriteriaQuery criteria = cb.createQuery(Coin.class);
         jakarta.persistence.criteria.Root<Coin> root = criteria.from(Coin.class);
-        
-        if (order == null){
+
+        if (order == null) {
             listResult = super.findAll();
-        }
-        else{ //as
-            if (order.equalsIgnoreCase("asc"))
-            {
+        } else {
+            if (order.equalsIgnoreCase("asc")) {
                 listResult = em.createQuery(criteria.select(root).orderBy(cb.asc(root.get("price")))).getResultList();
-            }
-            else if (order.equalsIgnoreCase("desc"))
-            {
+            } else if (order.equalsIgnoreCase("desc")) {
                 listResult = em.createQuery(criteria.select(root).orderBy(cb.desc(root.get("price")))).getResultList();
-            }
-            else
-            {
+            } else {
                 return Response.status(Status.NOT_FOUND).entity("Ups").build();
             }
-            
+
         }
         return Response.ok(listResult).build();
     }
@@ -102,10 +95,10 @@ public class CoinFacadeREST extends AbstractFacade<Coin> {
     public String countREST() {
         return String.valueOf(super.count());
     }
- 
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }
