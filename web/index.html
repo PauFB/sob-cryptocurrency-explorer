@@ -33,16 +33,31 @@
         <div class="centered w3-row">
             <a href="install.jsp"  class="w3-button w3-white w3-border w3-border-red w3-round-large w3-xlarge"> Insert </a>
         </div>
+        
+        <h3>Sign up</h3>
         <form name="signup_customer_form">
-            Name <input type="text" name="name_input">
+            Name <input type="text" name="name">
             <br>
-            E-mail <input type="text" name="email_input">
+            E-mail <input type="text" name="email">
             <br>
-            Password <input type="password" name="password_input">
+            Password <input type="password" name="password">
             <br>
-            Phone number <input type="number" name="phone_input">
+            Phone number <input type="number" name="phone">
             <br>
             <input type="button" value="Sign up" onClick="signUpCustomer()">
+        </form>
+        
+        <h3>Make a purchase</h3>
+        <form name="make_purchase_form">
+            E-mail <input type="text" name="email">
+            <br>
+            Password <input type="password" name="password">
+            <br>
+            Cryptocurrency ID <input type="number" name="id">
+            <br>
+            Cryptocurrency amount <input type="number" name="purchasedAmount">
+            <br>
+            <input type="button" value="Make purchase" onClick="makePurchase()">
         </form>
         <script>
             function signUpCustomer() {
@@ -51,18 +66,41 @@
                 req.setRequestHeader("Content-Type", "application/json");
                 req.onreadystatechange = function() {
                     if (req.readyState === XMLHttpRequest.DONE) {
-                        if (req.responseText === "")
-                            window.alert("Sign up successful.");
+                        if (req.status >= 200 && req.status <= 299)
+                            window.alert("Sign up successful.\n\nstatus:\n" + req.status + "\n\nresponseText:\n" + req.responseText);
                         else
-                            window.alert("Error.");
+                            window.alert("Error\n\nstatus:\n" + req.status + "\n\nresponseText:\n" + req.responseText);
                     }
                 };
                 let body =
                         `{
-                            "email": "${document.signup_customer_form.email_input.value}",
-                            "name": "${document.signup_customer_form.name_input.value}",
-                            "password": "${document.signup_customer_form.password_input.value}",
-                            "phone": "${document.signup_customer_form.phone_input.value}"
+                            "email": "${document.signup_customer_form.email.value}",
+                            "name": "${document.signup_customer_form.name.value}",
+                            "password": "${document.signup_customer_form.password.value}",
+                            "phone": "${document.signup_customer_form.phone.value}"
+                        }`;
+                req.send(body);
+            }
+            function makePurchase() {
+                let req = new XMLHttpRequest();
+                req.open("POST", "http://localhost:8080/sob-cryptocurrency-explorer/rest/api/v1/purchase?cryptocurrency=" + document.make_purchase_form.id.value);
+                req.setRequestHeader("Content-Type", "application/json");
+                //req.setRequestHeader("Accept", "application/json");
+                req.setRequestHeader("Authorization", "Basic " + btoa(document.make_purchase_form.email.value + ":" + document.make_purchase_form.password.value));
+                req.onreadystatechange = function() {
+                    if (req.readyState === XMLHttpRequest.DONE) {
+                        if (req.status >= 200 && req.status <= 299)
+                            window.alert("Purchase successful.\n\nstatus:\n" + req.status + "\n\nresponseText:\n" + req.responseText);
+                        else {
+                            window.alert("Error\n\nstatus:\n" + req.status + "\n\nresponseText:\n" + req.responseText);
+                            window.alert("body:\n" + body + "\n\nAuthorization:\n" + document.make_purchase_form.email.value + ":" + document.make_purchase_form.password.value + "\n" + btoa(document.make_purchase_form.email.value + ":" + document.make_purchase_form.password.value));
+                        }
+                    }
+                };
+                let body =
+                        `{
+                            "email": "${document.make_purchase_form.email.value}",
+                            "purchasedAmount": ${document.make_purchase_form.purchasedAmount.value}
                         }`;
                 req.send(body);
             }

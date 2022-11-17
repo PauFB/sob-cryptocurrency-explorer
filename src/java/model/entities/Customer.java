@@ -8,12 +8,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 @Entity
+@NamedQuery(name="Customer.findCustomerByEmail",
+            query="SELECT c FROM Customer c WHERE c.email = :email")
 @XmlRootElement
 public class Customer implements java.io.Serializable {
 
@@ -38,10 +41,10 @@ public class Customer implements java.io.Serializable {
         this.coins = new ArrayList<>();
     }
 
-    public Customer(String name, String mail, String passwd, String phone) {
+    public Customer(String name, String email, String password, String phone) {
         this.name = name;
-        this.email = mail;
-        this.password = passwd;
+        this.email = email;
+        this.password = password;
         this.phone = phone;
         this.purchases = new ArrayList<>();
         this.coins = new ArrayList<>();

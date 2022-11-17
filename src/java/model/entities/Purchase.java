@@ -21,7 +21,7 @@ public class Purchase implements java.io.Serializable {
     @SequenceGenerator(name = "Purchase_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Purchase_Gen")
     private int id;
-    private float amount;
+    private double purchasedAmount;
     private Date date;
     @OneToOne
     private Coin coin;
@@ -31,9 +31,9 @@ public class Purchase implements java.io.Serializable {
     public Purchase() {
     }
 
-    public Purchase(Date datePurchase, float amount, Customer customer, Coin coin) {
-        this.date = datePurchase;
-        this.amount = amount;
+    public Purchase(Date date, double purchasedAmount, Customer customer, Coin coin) {
+        this.date = date;
+        this.purchasedAmount = purchasedAmount;
         this.customer = customer;
         this.coin = coin;
     }
@@ -54,12 +54,12 @@ public class Purchase implements java.io.Serializable {
         this.date = date;
     }
 
-    public float getAmount() {
-        return this.amount;
+    public double getPurchasedAmount() {
+        return this.purchasedAmount;
     }
 
-    public void setAmount(float amount) {
-        this.amount = amount;
+    public void setPurchasedAmount(double purchasedAmount) {
+        this.purchasedAmount = purchasedAmount;
     }
 
     public Customer getCustomer() {
@@ -80,7 +80,7 @@ public class Purchase implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return ("Date: " + this.date + " Amount: " + this.amount + " Customer: " + this.customer + " Coin:" + this.coin);
+        return ("Date: " + this.date + " Amount: " + this.purchasedAmount + " Customer: " + this.customer + " Coin:" + this.coin);
     }
 
 }

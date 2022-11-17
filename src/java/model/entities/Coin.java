@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +16,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 @Entity
+@NamedQuery(name="Coin.findCoinById",
+            query="SELECT c FROM Coin c WHERE c.id = :id")
 @XmlRootElement
 public class Coin implements java.io.Serializable {
 
@@ -26,7 +29,7 @@ public class Coin implements java.io.Serializable {
     private int id;
     private String description;
     private String name;
-    private float price;
+    private double price;
     private Date priceTimestamp;
     @ManyToMany
     private Collection<Customer> customers;
@@ -36,7 +39,7 @@ public class Coin implements java.io.Serializable {
     public Coin() {
     }
 
-    public Coin(String name, String description, float price, Date priceTimestamp) {
+    public Coin(String name, String description, double price, Date priceTimestamp) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -68,11 +71,11 @@ public class Coin implements java.io.Serializable {
         this.description = description;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return this.price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

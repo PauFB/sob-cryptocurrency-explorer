@@ -31,8 +31,9 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
 
     @POST
     @Override
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     public void create(Customer entity) {
+        // comprovar si l'@ de correu ja està en ús
         super.create(entity);
     }
 
