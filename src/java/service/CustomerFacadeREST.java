@@ -1,5 +1,6 @@
 package service;
 
+import authn.Credentials;
 import java.util.List;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -15,7 +16,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.entities.Customer;
 import authn.Secured;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
 @Stateless
@@ -33,7 +33,10 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @Override
     @Consumes({MediaType.APPLICATION_JSON})
     public void create(Customer entity) {
-        // comprovar si l'@ de correu ja està en ús
+        Credentials credentials = new Credentials();
+        credentials.setUsername(entity.getEmail());
+        credentials.setPassword(entity.getPassword());
+        em.persist(credentials);
         super.create(entity);
     }
 
@@ -64,11 +67,10 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     public List<Customer> findAll() {
         return super.findAll();
     }*/
-    
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List findAll(){
+    public List findAll() {
         String query = "SELECT c.id, c.email, c.name, c.phone FROM Customer c";
         return em.createQuery(query).getResultList();
     }
@@ -79,14 +81,14 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     public List<Customer> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
-    
+
     @GET
     @Produces("text/plain")
     @Path("prove?{testName}")
     public String proveMessage(@PathParam("testName") String name) {
         return "Yo " + name;
     }
-    
+
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
@@ -98,5 +100,5 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

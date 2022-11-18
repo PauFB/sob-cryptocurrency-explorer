@@ -99,7 +99,6 @@
                 };
                 let body =
                         `{
-                            "email": "${document.make_purchase_form.email.value}",
                             "purchasedAmount": ${document.make_purchase_form.purchasedAmount.value}
                         }`;
                 req.send(body);

@@ -18,7 +18,6 @@ import jakarta.ws.rs.ext.Provider;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.container.ResourceInfo;
-import model.entities.Customer;
 
 
 /**
@@ -50,14 +49,14 @@ public class RESTRequestFilter implements ContainerRequestFilter {
                 
                 if(headers != null && !headers.isEmpty())
                 {
-                    String email;
+                    String username;
                     String password;
                     try {
                         String auth = headers.get(0);
                         auth = auth.replace(AUTHORIZATION_HEADER_PREFIX, "");
                         String decode = Base64.base64Decode(auth);
                         StringTokenizer tokenizer = new StringTokenizer(decode, ":");
-                        email = tokenizer.nextToken();
+                        username = tokenizer.nextToken();
                         password = tokenizer.nextToken();
                     } catch(@SuppressWarnings("unused") Exception e){
                         requestCtx.abortWith(
@@ -65,9 +64,10 @@ public class RESTRequestFilter implements ContainerRequestFilter {
                         );
                         return;
                     }
+                    
                     try {
-                        TypedQuery<Customer> query = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class);
-                        Customer c = query.setParameter("email", email)
+                        TypedQuery<Credentials> query = em.createNamedQuery("Credentials.findUser", Credentials.class);
+                        Credentials c = query.setParameter("username", username)
                             .getSingleResult();
                         if(!c.getPassword().equals(password)) {
                             requestCtx.abortWith(
@@ -78,7 +78,7 @@ public class RESTRequestFilter implements ContainerRequestFilter {
                         requestCtx.abortWith(
                             Response.status(Response.Status.UNAUTHORIZED).build()
                         );
-                    }
+                    }                  
                 }  
                 else {
                    requestCtx.abortWith(
