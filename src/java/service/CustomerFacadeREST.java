@@ -16,6 +16,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.entities.Customer;
 import authn.Secured;
+import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.core.Response;
 
 @Stateless
@@ -58,21 +59,23 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response find(@PathParam("id") int id) {
-        return Response.ok().entity(super.find(id)).build();
+        
+        Object custom;
+        try{
+            custom = em.createNamedQuery("Customer.findCustomerByIdExceptPassword", Customer.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        }catch(NoResultException e){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok().entity(custom).build();
     }
-
-    /*@GET
-    @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Customer> findAll() {
-        return super.findAll();
-    }*/
+    
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List findAll() {
-        String query = "SELECT c.id, c.email, c.name, c.phone FROM Customer c";
-        return em.createQuery(query).getResultList();
+        return em.createNamedQuery("Customer.findAll", Customer.class).getResultList();
     }
 
     @GET
@@ -80,13 +83,6 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Customer> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("prove?{testName}")
-    public String proveMessage(@PathParam("testName") String name) {
-        return "Yo " + name;
     }
 
     @GET

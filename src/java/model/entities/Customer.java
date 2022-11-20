@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
@@ -15,8 +16,17 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 @Entity
-@NamedQuery(name="Customer.findCustomerByEmail",
-            query="SELECT c FROM Customer c WHERE c.email = :email")
+@NamedQueries({
+    @NamedQuery(name="Customer.findCustomerByEmail",
+            query="SELECT c FROM Customer c WHERE c.email = :email"),
+    @NamedQuery(name="Customer.findCustomerById",
+            query="SELECT c FROM Customer c WHERE c.id = :id"),
+    @NamedQuery(name="Customer.findCustomerByIdExceptPassword",
+            query="SELECT c.id, c.email, c.name, c.phone FROM Customer c WHERE c.id = :id"),
+    @NamedQuery(name="Customer.findAll",
+            query="SELECT c.id, c.email, c.name, c.phone FROM Customer c")
+})
+
 @XmlRootElement
 public class Customer implements java.io.Serializable {
 

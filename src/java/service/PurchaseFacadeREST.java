@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.MediaType;
 import model.entities.Purchase;
 import authn.Secured;
 import com.sun.xml.messaging.saaj.util.Base64;
+import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
@@ -40,28 +41,34 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Response makePurchase(@HeaderParam("Authorization") String auth, @QueryParam("cryptocurrency") int coinId, Purchase entity) {
-
         auth = auth.replace("Basic ", "");
         String decode = Base64.base64Decode(auth);
         StringTokenizer tokenizer = new StringTokenizer(decode, ":");
         String email = tokenizer.nextToken();
-
-        Customer customer = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class)
-                .setParameter("email", email)
-                .getSingleResult();
-        Coin coin = em.createNamedQuery("Coin.findCoinById", Coin.class)
-                .setParameter("id", coinId)
-                .getSingleResult();
-
-        //double amountCharged = entity.getPurchasedAmount() * coin.getPrice();
-        entity.setCoin(coin);
-        entity.setCustomer(customer);
-        entity.setDate(new Date());
-        super.create(entity);
+  
+        try {
+            Customer customer = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+            
+            Coin coin = em.createNamedQuery("Coin.findCoinById", Coin.class)
+                    .setParameter("id", coinId)
+                    .getSingleResult();
+            
+            entity.setCoin(coin);
+            
+            entity.setCustomer(customer);
+            entity.setDate(new Date());
+            super.create(entity);
+        } catch (NoResultException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("").build();
+        } finally {
+            
+        }
 
         return Response.ok(entity).build();
     }
-
+    
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
