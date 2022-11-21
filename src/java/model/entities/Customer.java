@@ -26,7 +26,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name="Customer.findAll",
             query="SELECT c.id, c.email, c.name, c.phone FROM Customer c")
 })
-
 @XmlRootElement
 public class Customer implements java.io.Serializable {
 
@@ -42,13 +41,13 @@ public class Customer implements java.io.Serializable {
     private String password;
     private String phone;
     @ManyToMany(mappedBy = "customers")
-    final private Collection<Coin> coins;
+    final private Collection<Cryptocurrency> cryptocurrencies;
     @OneToMany(mappedBy = "customer")
-    final private Collection<Purchase> purchases;
+    final private Collection<Purchase> orders;
 
     public Customer() {
-        this.purchases = new ArrayList<>();
-        this.coins = new ArrayList<>();
+        this.orders = new ArrayList<>();
+        this.cryptocurrencies = new ArrayList<>();
     }
 
     public Customer(String name, String email, String password, String phone) {
@@ -56,8 +55,8 @@ public class Customer implements java.io.Serializable {
         this.email = email;
         this.password = password;
         this.phone = phone;
-        this.purchases = new ArrayList<>();
-        this.coins = new ArrayList<>();
+        this.orders = new ArrayList<>();
+        this.cryptocurrencies = new ArrayList<>();
     }
 
     public int getId() {
@@ -100,12 +99,12 @@ public class Customer implements java.io.Serializable {
         this.phone = phone;
     }
 
-    public void addPurchase(Purchase purchase) {
-        this.purchases.add(purchase);
+    public void addOrder(Purchase order) {
+        this.orders.add(order);
     }
 
-    public void addCoin(Coin coin) {
-        this.coins.add(coin);
+    public void addCryptocurrency(Cryptocurrency cryptocurrency) {
+        this.cryptocurrencies.add(cryptocurrency);
     }
 
     @Override

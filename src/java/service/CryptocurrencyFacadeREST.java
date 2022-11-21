@@ -13,34 +13,34 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import model.entities.Coin;
+import model.entities.Cryptocurrency;
 import authn.Secured;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
 @Stateless
-@Path("coin")
-public class CoinFacadeREST extends AbstractFacade<Coin> {
+@Path("cryptocurrency")
+public class CryptocurrencyFacadeREST extends AbstractFacade<Cryptocurrency> {
 
     @PersistenceContext(unitName = "Homework1PU")
     private EntityManager em;
 
-    public CoinFacadeREST() {
-        super(Coin.class);
+    public CryptocurrencyFacadeREST() {
+        super(Cryptocurrency.class);
     }
 
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Coin entity) {
+    public void create(Cryptocurrency entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") int id, Coin entity) {
+    public void edit(@PathParam("id") int id, Cryptocurrency entity) {
         super.edit(entity);
     }
 
@@ -62,10 +62,10 @@ public class CoinFacadeREST extends AbstractFacade<Coin> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, "text/plain"})
     public Response findAll(@QueryParam("order") String order) {
 
-        java.util.List<Coin> listResult = new java.util.ArrayList<Coin>();
+        java.util.List<Cryptocurrency> listResult = new java.util.ArrayList<Cryptocurrency>();
         jakarta.persistence.criteria.CriteriaBuilder cb = em.getCriteriaBuilder();
-        jakarta.persistence.criteria.CriteriaQuery criteria = cb.createQuery(Coin.class);
-        jakarta.persistence.criteria.Root<Coin> root = criteria.from(Coin.class);
+        jakarta.persistence.criteria.CriteriaQuery criteria = cb.createQuery(Cryptocurrency.class);
+        jakarta.persistence.criteria.Root<Cryptocurrency> root = criteria.from(Cryptocurrency.class);
 
         if (order == null) {
             listResult = super.findAll();
@@ -85,7 +85,7 @@ public class CoinFacadeREST extends AbstractFacade<Coin> {
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Coin> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+    public List<Cryptocurrency> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
 

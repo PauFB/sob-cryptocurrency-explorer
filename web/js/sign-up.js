@@ -10,14 +10,11 @@ function signUpCustomer() {
                 window.alert("Error\n\nstatus:\n" + req.status + "\n\nresponseText:\n" + req.responseText);
         }
     };
-    let body =
-            `{
-                "email": "${document.signup_customer_form.email.value}",
-                "name": "${document.signup_customer_form.name.value}",
-                "password": "${document.signup_customer_form.password.value}",
-                "phone": "${document.signup_customer_form.phone.value}"
-}`;
-
-    console.log(body);
-    req.send(body);
+    let bodyAttributes = {
+        email: new String(document.signup_customer_form.email.value),
+        name: new String(document.signup_customer_form.name.value),
+        password: new String(document.signup_customer_form.password.value),
+        phone: new String(document.signup_customer_form.phone.value)
+    };
+    req.send(JSON.stringify(bodyAttributes));
 }

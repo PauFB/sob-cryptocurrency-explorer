@@ -57,9 +57,8 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @GET
     @Secured
     @Path("{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public Response find(@PathParam("id") int id) {
-        
         Object custom;
         try{
             custom = em.createNamedQuery("Customer.findCustomerByIdExceptPassword", Customer.class)

@@ -4,24 +4,24 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make purchase</title>
+    <title>Log in</title>
 </head>
 <body>
-    <h3>Make a purchase</h3>
-    <form name="make_purchase_form">
+    <h3>Sign up</h3>
+    <form name="signup_customer_form">
+        Name <input type="text" name="name">
+        <br>
         E-mail <input type="text" name="email">
         <br>
         Password <input type="password" name="password">
         <br>
-        Cryptocurrency ID <input type="number" name="id">
+        Phone number <input type="number" name="phone">
         <br>
-        Cryptocurrency amount <input type="number" name="purchasedAmount">
-        <br>
-        <input type="button" value="Make purchase" onClick="makePurchase()">
+        <input type="button" value="Sign up" onClick="signUpCustomer()">
     </form>
     <div>
         <a href="../index.html" class="w3-button w3-white w3-border w3-border-red w3-round-large w3-xlarge"> Go back </a>
     </div>
-    <script src="../JavaScriptFiles/MakePurchase.js"></script>
+    <script src="../js/sign-up.js"></script>
 </body>
 </html>

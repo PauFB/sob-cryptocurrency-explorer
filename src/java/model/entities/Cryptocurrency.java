@@ -9,23 +9,23 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 @Entity
-@NamedQuery(name="Coin.findCoinById",
-            query="SELECT c FROM Coin c WHERE c.id = :id")
+@NamedQuery(name="Cryptocurrency.findCryptocurrencyById",
+            query="SELECT c FROM Cryptocurrency c WHERE c.id = :id")
 @XmlRootElement
-public class Coin implements java.io.Serializable {
+public class Cryptocurrency implements java.io.Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @SequenceGenerator(name = "Coin_Gen", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Coin_Gen")
+    @SequenceGenerator(name = "Cryptocurrency_Gen", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Cryptocurrency_Gen")
     private int id;
     private String description;
     private String name;
@@ -33,18 +33,19 @@ public class Coin implements java.io.Serializable {
     private Date priceTimestamp;
     @ManyToMany
     private Collection<Customer> customers;
-    @OneToOne(mappedBy = "coin")
-    private Purchase purchase;
+    @OneToMany(mappedBy = "cryptocurrency")
+    private Collection<Purchase> orders;
 
-    public Coin() {
+    public Cryptocurrency() {
     }
 
-    public Coin(String name, String description, double price, Date priceTimestamp) {
+    public Cryptocurrency(String name, String description, double price, Date priceTimestamp) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.priceTimestamp = priceTimestamp;
         this.customers = new ArrayList<>();
+        this.orders = new ArrayList<>();
     }
 
     public int getId() {
@@ -89,6 +90,10 @@ public class Coin implements java.io.Serializable {
 
     public void addCustomer(Customer customer) {
         this.customers.add(customer);
+    }
+    
+    public void addOrder(Purchase order) {
+        this.orders.add(order);
     }
 
     @Override

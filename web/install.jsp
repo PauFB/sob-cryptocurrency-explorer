@@ -38,8 +38,8 @@
             String data[] = new String[]{
                 "INSERT INTO " + schema + ".CREDENTIALS VALUES (NEXT VALUE FOR CREDENTIALS_GEN, 'admin', 'admin')",
                 "INSERT INTO " + schema + ".CUSTOMER VALUES (NEXT VALUE FOR CUSTOMER_GEN, 'admin', 'admin', 'admin', '000000000')",
-                "INSERT INTO " + schema + ".COIN VALUES (NEXT VALUE FOR COIN_GEN, 'Generic description.', 'Bitcoin', 500000.0, '2000-1-1-12.00.00.000000')",
-                "INSERT INTO " + schema + ".COIN VALUES (NEXT VALUE FOR COIN_GEN, 'Generic description.', 'Ethereum', 30000.0, '2000-1-1-12.00.00.000000')",
+                "INSERT INTO " + schema + ".CRYPTOCURRENCY VALUES (NEXT VALUE FOR CRYPTOCURRENCY_GEN, 'Generic description.', 'Bitcoin', 500000.0, '2000-1-1-12.00.00.000000')",
+                "INSERT INTO " + schema + ".CRYPTOCURRENCY VALUES (NEXT VALUE FOR CRYPTOCURRENCY_GEN, 'Generic description.', 'Ethereum', 30000.0, '2000-1-1-12.00.00.000000')",
             };
             for (String datum : data) {
                 if (stmt.executeUpdate(datum)<=0) {
