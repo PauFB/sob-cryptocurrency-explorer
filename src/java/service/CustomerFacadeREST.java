@@ -16,8 +16,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.entities.Customer;
 import authn.Secured;
+import com.google.gson.Gson;
 import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.core.Response;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 @Stateless
 @Path("customer")
@@ -59,15 +62,20 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON})
     public Response find(@PathParam("id") int id) {
-        Object custom;
+        
+        Customer customer = super.find(id);
+        Gson gson = new Gson();
+        String jsonString = new Gson().toJson(customer);
+        JSONObject request;
+
         try{
-            custom = em.createNamedQuery("Customer.findCustomerByIdExceptPassword", Customer.class)
-                    .setParameter("id", id)
-                    .getSingleResult();
-        }catch(NoResultException e){
-            return Response.status(Response.Status.NOT_FOUND).build();
+            request = new JSONObject(jsonString);
+            request.remove("password");
+        }catch(JSONException e){
+            return Response.status(Response.Status.CONFLICT).build();
         }
-        return Response.ok().entity(custom).build();
+        
+        return Response.ok().entity(request.toString()).build();
     }
     
     @GET

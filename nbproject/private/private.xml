@@ -3,8 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/paufe/Documents/NetBeansProjects/sob-cryptocurrency-explorer/web/install.jsp</file>
-            <file>file:/C:/Users/paufe/Documents/NetBeansProjects/sob-cryptocurrency-explorer/src/java/model/entities/Order.java</file>
+            <file>file:/C:/4arto/SO/practica1/sob-cryptocurrency-explorer/src/java/model/entities/Customer.java</file>
+            <file>file:/C:/4arto/SO/practica1/sob-cryptocurrency-explorer/web/install.jsp</file>
+            <file>file:/C:/4arto/SO/practica1/sob-cryptocurrency-explorer/src/java/service/CustomerFacadeREST.java</file>
         </group>
     </open-files>
 </project-private>
