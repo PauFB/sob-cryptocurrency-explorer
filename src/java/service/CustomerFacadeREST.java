@@ -1,6 +1,5 @@
 package service;
 
-import authn.Credentials;
 import java.util.List;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -41,10 +40,6 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @Override
     @Consumes({MediaType.APPLICATION_JSON})
     public void create(Customer entity) {
-        Credentials credentials = new Credentials();
-        credentials.setUsername(entity.getEmail());
-        credentials.setPassword(entity.getPassword());
-        em.persist(credentials);
         super.create(entity);
     }
 
@@ -52,31 +47,31 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @Secured
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void updateCustomerInfo(@HeaderParam("Authorization") String auth, @PathParam("id") int id, Customer entity) {
+    public Response updateCustomerInfo(@HeaderParam("Authorization") String auth, @PathParam("id") int id, Customer entity) {
         auth = auth.replace("Basic ", "");
         String decode = Base64.base64Decode(auth);
         StringTokenizer tokenizer = new StringTokenizer(decode, ":");
         String email = tokenizer.nextToken();
-        Customer cust = em.createNamedQuery("Customer.findCustomerById", Customer.class)
-                .setParameter("id", id)
+        
+        Customer cust = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class)
+                .setParameter("email", email)
                 .getSingleResult();
-        Credentials cred = em.createNamedQuery("Credentials.findUser", Credentials.class)
-                .setParameter("username", email)
-                .getSingleResult();
+        
+        if (id != cust.getId())
+            return Response.status(Response.Status.FORBIDDEN).build();
+        
         if (entity.getEmail() != null) {
             cust.setEmail(entity.getEmail());
-            cred.setUsername(entity.getEmail());
         }
         if (entity.getName() != null)
             cust.setName(entity.getName());
         if (entity.getPassword() != null) {
             cust.setPassword(entity.getPassword());
-            cred.setPassword(entity.getPassword());
         }
         if (entity.getPhone() != null)
             cust.setPhone(entity.getPhone());
         em.persist(cust);
-        em.persist(cred);
+        return Response.status(Response.Status.OK).build();
     }
 
     @DELETE

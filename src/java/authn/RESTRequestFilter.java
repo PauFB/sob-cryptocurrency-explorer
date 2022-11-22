@@ -18,6 +18,7 @@ import jakarta.ws.rs.ext.Provider;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.container.ResourceInfo;
+import model.entities.Customer;
 
 
 /**
@@ -66,8 +67,8 @@ public class RESTRequestFilter implements ContainerRequestFilter {
                     }
                     
                     try {
-                        TypedQuery<Credentials> query = em.createNamedQuery("Credentials.findUser", Credentials.class);
-                        Credentials c = query.setParameter("username", username)
+                        TypedQuery<Customer> query = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class);
+                        Customer c = query.setParameter("email", username)
                             .getSingleResult();
                         if(!c.getPassword().equals(password)) {
                             requestCtx.abortWith(
