@@ -17,8 +17,11 @@ import jakarta.ws.rs.core.MediaType;
 import model.entities.Customer;
 import authn.Secured;
 import com.google.gson.Gson;
+import com.sun.xml.messaging.saaj.util.Base64;
 import jakarta.persistence.NoResultException;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.core.Response;
+import java.util.StringTokenizer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -46,10 +49,34 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     }
 
     @PUT
+    @Secured
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") int id, Customer entity) {
-        super.edit(entity);
+    public void updateCustomerInfo(@HeaderParam("Authorization") String auth, @PathParam("id") int id, Customer entity) {
+        auth = auth.replace("Basic ", "");
+        String decode = Base64.base64Decode(auth);
+        StringTokenizer tokenizer = new StringTokenizer(decode, ":");
+        String email = tokenizer.nextToken();
+        Customer cust = em.createNamedQuery("Customer.findCustomerById", Customer.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        Credentials cred = em.createNamedQuery("Credentials.findUser", Credentials.class)
+                .setParameter("username", email)
+                .getSingleResult();
+        if (entity.getEmail() != null) {
+            cust.setEmail(entity.getEmail());
+            cred.setUsername(entity.getEmail());
+        }
+        if (entity.getName() != null)
+            cust.setName(entity.getName());
+        if (entity.getPassword() != null) {
+            cust.setPassword(entity.getPassword());
+            cred.setPassword(entity.getPassword());
+        }
+        if (entity.getPhone() != null)
+            cust.setPhone(entity.getPhone());
+        em.persist(cust);
+        em.persist(cred);
     }
 
     @DELETE
