@@ -26,7 +26,7 @@ import model.entities.Cryptocurrency;
 import model.entities.Customer;
 
 @Stateless
-@Path("order")
+@Path("purchase")
 public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
 
     @PersistenceContext(unitName = "Homework1PU")
@@ -40,7 +40,7 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
     @Secured
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response createOrder(@HeaderParam("Authorization") String auth, @QueryParam("cryptocurrency") int cryptocurrencyId, Purchase entity) {
+    public Response createPurchase(@HeaderParam("Authorization") String auth, @QueryParam("cryptocurrency") int cryptocurrencyId, Purchase entity) {
         auth = auth.replace("Basic ", "");
         String decode = Base64.base64Decode(auth);
         StringTokenizer tokenizer = new StringTokenizer(decode, ":");

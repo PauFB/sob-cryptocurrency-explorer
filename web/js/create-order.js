@@ -1,6 +1,6 @@
 function createOrder() {
     let req = new XMLHttpRequest();
-    req.open("POST", "http://localhost:8080/sob-cryptocurrency-explorer/rest/api/v1/order?cryptocurrency=" + document.make_purchase_form.id.value, true);
+    req.open("POST", "http://localhost:8080/sob-cryptocurrency-explorer/rest/api/v1/purchase?cryptocurrency=" + document.make_purchase_form.id.value, true);
     req.setRequestHeader("Content-Type", "application/json");
     req.setRequestHeader("Authorization", "Basic "+btoa(`${document.make_purchase_form.email.value}:${document.make_purchase_form.password.value}`) + " ==");
     req.onreadystatechange = function() {

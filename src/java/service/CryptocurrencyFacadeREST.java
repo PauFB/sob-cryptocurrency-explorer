@@ -62,7 +62,7 @@ public class CryptocurrencyFacadeREST extends AbstractFacade<Cryptocurrency> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, "text/plain"})
     public Response findAll(@QueryParam("order") String order) {
 
-        java.util.List<Cryptocurrency> listResult = new java.util.ArrayList<Cryptocurrency>();
+        java.util.List<Cryptocurrency> listResult;
         jakarta.persistence.criteria.CriteriaBuilder cb = em.getCriteriaBuilder();
         jakarta.persistence.criteria.CriteriaQuery criteria = cb.createQuery(Cryptocurrency.class);
         jakarta.persistence.criteria.Root<Cryptocurrency> root = criteria.from(Cryptocurrency.class);
@@ -75,7 +75,7 @@ public class CryptocurrencyFacadeREST extends AbstractFacade<Cryptocurrency> {
             } else if (order.equalsIgnoreCase("desc")) {
                 listResult = em.createQuery(criteria.select(root).orderBy(cb.desc(root.get("price")))).getResultList();
             } else {
-                return Response.status(Status.NOT_FOUND).entity("Ups").build();
+                return Response.status(Status.NOT_FOUND).build();
             }
 
         }

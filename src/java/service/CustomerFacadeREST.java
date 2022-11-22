@@ -63,46 +63,40 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON})
     public Response find(@PathParam("id") int id) {
-        
         Customer customer = super.find(id);
-        Gson gson = new Gson();
-        String jsonString = new Gson().toJson(customer);
-        JSONObject request = serializeClass(customer);
-        
-        return Response.ok().entity(request.toString()).build();
+        JSONObject response = getJsonObjectWithoutPassword(customer);
+        return Response.ok().entity(response.toString()).build();
     }
-    
-    private JSONObject serializeClass(Customer customer){
-        Gson gson = new Gson();
+
+    private JSONObject getJsonObjectWithoutPassword(Customer customer) {
         String jsonString = new Gson().toJson(customer);
-        JSONObject request = null;
-        try{
+        JSONObject request;
+        try {
             request = new JSONObject(jsonString);
             request.remove("password");
-        }catch(JSONException e){
+        } catch (JSONException e) {
+            return null;
         }
         return request;
     }
-    
+
     @Override
     public List<Customer> findAll() {
-        return null;
+        return em.createNamedQuery("Customer.findAll", Customer.class).getResultList();
     }
-    
+
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-      public String findAllNoPasswd() {
-        
-        List<Customer> result = super.findAll();
-        JSONArray jsonList = new JSONArray();
-        JSONObject request = null;
-        
-        for (Customer cust : result){
-            request = serializeClass(cust);
-            request.remove("password");
-            jsonList.put(request);
+    public String findAllWithoutPasswords() {
+        List<Customer> customerList = super.findAll();
+        JSONObject actualCustomer;
+        JSONArray jsonArray = new JSONArray();
+        for (Customer cust : customerList) {
+            actualCustomer = getJsonObjectWithoutPassword(cust);
+            actualCustomer.remove("password");
+            jsonArray.put(actualCustomer);
         }
-        return jsonList.toString();
+        return jsonArray.toString();
     }
 
     @GET

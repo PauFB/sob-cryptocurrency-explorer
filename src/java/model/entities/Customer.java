@@ -43,10 +43,10 @@ public class Customer implements java.io.Serializable {
     @ManyToMany(mappedBy = "customers")
     final private Collection<Cryptocurrency> cryptocurrencies;
     @OneToMany(mappedBy = "customer")
-    final private Collection<Purchase> orders;
+    final private Collection<Purchase> purchases;
 
     public Customer() {
-        this.orders = new ArrayList<>();
+        this.purchases = new ArrayList<>();
         this.cryptocurrencies = new ArrayList<>();
     }
 
@@ -55,7 +55,7 @@ public class Customer implements java.io.Serializable {
         this.email = email;
         this.password = password;
         this.phone = phone;
-        this.orders = new ArrayList<>();
+        this.purchases = new ArrayList<>();
         this.cryptocurrencies = new ArrayList<>();
     }
 
@@ -99,8 +99,8 @@ public class Customer implements java.io.Serializable {
         this.phone = phone;
     }
 
-    public void addOrder(Purchase order) {
-        this.orders.add(order);
+    public void addPurchase(Purchase purchase) {
+        this.purchases.add(purchase);
     }
 
     public void addCryptocurrency(Cryptocurrency cryptocurrency) {
