@@ -19,6 +19,7 @@ import authn.Secured;
 import com.google.gson.Gson;
 import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.core.Response;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -66,23 +67,42 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
         Customer customer = super.find(id);
         Gson gson = new Gson();
         String jsonString = new Gson().toJson(customer);
-        JSONObject request;
-
-        try{
-            request = new JSONObject(jsonString);
-            request.remove("password");
-        }catch(JSONException e){
-            return Response.status(Response.Status.CONFLICT).build();
-        }
+        JSONObject request = serializeClass(customer);
         
         return Response.ok().entity(request.toString()).build();
     }
     
-    @GET
+    private JSONObject serializeClass(Customer customer){
+        Gson gson = new Gson();
+        String jsonString = new Gson().toJson(customer);
+        JSONObject request = null;
+        try{
+            request = new JSONObject(jsonString);
+            request.remove("password");
+        }catch(JSONException e){
+        }
+        return request;
+    }
+    
     @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List findAll() {
-        return em.createNamedQuery("Customer.findAll", Customer.class).getResultList();
+    public List<Customer> findAll() {
+        return null;
+    }
+    
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+      public String findAllNoPasswd() {
+        
+        List<Customer> result = super.findAll();
+        JSONArray jsonList = new JSONArray();
+        JSONObject request = null;
+        
+        for (Customer cust : result){
+            request = serializeClass(cust);
+            request.remove("password");
+            jsonList.put(request);
+        }
+        return jsonList.toString();
     }
 
     @GET
