@@ -1,5 +1,7 @@
 package model.entities;
 
+import adapter.StringXmlAdapter;
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Column;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,17 +16,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @Entity
 @NamedQueries({
-    @NamedQuery(name="Customer.findCustomerByEmail",
-            query="SELECT c FROM Customer c WHERE c.email = :email"),
-    @NamedQuery(name="Customer.findCustomerById",
-            query="SELECT c FROM Customer c WHERE c.id = :id"),
-    @NamedQuery(name="Customer.findCustomerByIdExceptPassword",
-            query="SELECT c.id, c.email, c.name, c.phone FROM Customer c WHERE c.id = :id"),
-    @NamedQuery(name="Customer.findAll",
-            query="SELECT c.id, c.email, c.name, c.phone FROM Customer c")
+    @NamedQuery(name = "Customer.findCustomerByEmail",
+            query = "SELECT c FROM Customer c WHERE c.email = :email"),
+    @NamedQuery(name = "Customer.findCustomerById",
+            query = "SELECT c FROM Customer c WHERE c.id = :id"),
+    @NamedQuery(name = "Customer.findAll",
+            query = "SELECT c.id, c.email, c.name, c.phone FROM Customer c")
 })
 @XmlRootElement
 public class Customer implements java.io.Serializable {
@@ -35,13 +36,22 @@ public class Customer implements java.io.Serializable {
     @SequenceGenerator(name = "Customer_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Customer_Gen")
     private int id;
-    @Column(unique=true)
+    
+    @Column(unique = true)
+    @NotNull
     private String email;
+    
+    @NotNull
     private String name;
+    
+    @NotNull
     private String password;
+    
     private String phone;
+    
     @ManyToMany(mappedBy = "customers")
     final private Collection<Cryptocurrency> cryptocurrencies;
+    
     @OneToMany(mappedBy = "customer")
     final private Collection<Purchase> purchases;
 
@@ -83,6 +93,8 @@ public class Customer implements java.io.Serializable {
         this.name = name;
     }
 
+    @XmlJavaTypeAdapter(StringXmlAdapter.class)
+    @JsonbTransient
     public String getPassword() {
         return this.password;
     }

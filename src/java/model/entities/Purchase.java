@@ -6,7 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
@@ -21,12 +21,23 @@ public class Purchase implements java.io.Serializable {
     @SequenceGenerator(name = "Purchase_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Purchase_Gen")
     private int id;
+    
+    @NotNull
     private double purchasedAmount;
+    
+    @NotNull
     private Date date;
+    
     @ManyToOne
+    @NotNull
     private Cryptocurrency cryptocurrency;
+    
     @ManyToOne
+    @NotNull
     private Customer customer;
+    
+    @Transient
+    private double price;
 
     public Purchase() {
     }
@@ -76,6 +87,14 @@ public class Purchase implements java.io.Serializable {
 
     public void setCryptocurrency(Cryptocurrency cryptocurrency) {
         this.cryptocurrency = cryptocurrency;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     @Override

@@ -17,7 +17,6 @@ import model.entities.Cryptocurrency;
 import authn.Secured;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 
 @Stateless
 @Path("cryptocurrency")
@@ -59,27 +58,21 @@ public class CryptocurrencyFacadeREST extends AbstractFacade<Cryptocurrency> {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, "text/plain"})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response findAll(@QueryParam("order") String order) {
-
-        java.util.List<Cryptocurrency> listResult;
-        jakarta.persistence.criteria.CriteriaBuilder cb = em.getCriteriaBuilder();
-        jakarta.persistence.criteria.CriteriaQuery criteria = cb.createQuery(Cryptocurrency.class);
-        jakarta.persistence.criteria.Root<Cryptocurrency> root = criteria.from(Cryptocurrency.class);
-
-        if (order == null) {
-            listResult = super.findAll();
-        } else {
-            if (order.equalsIgnoreCase("asc")) {
-                listResult = em.createQuery(criteria.select(root).orderBy(cb.asc(root.get("price")))).getResultList();
-            } else if (order.equalsIgnoreCase("desc")) {
-                listResult = em.createQuery(criteria.select(root).orderBy(cb.desc(root.get("price")))).getResultList();
-            } else {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-
+        List<Cryptocurrency> resultList;
+        if (order == null)
+            resultList = super.findAll();
+        else {
+            if (order.equalsIgnoreCase("asc"))
+                resultList = em.createNamedQuery("Cryptocurrency.findAllPriceAscending", Cryptocurrency.class).getResultList();
+            else
+                if (order.equalsIgnoreCase("desc"))
+                    resultList = em.createNamedQuery("Cryptocurrency.findAllPriceDescending", Cryptocurrency.class).getResultList();
+                else
+                    return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        return Response.ok(listResult).build();
+        return Response.ok(resultList).build();
     }
 
     @GET
@@ -90,10 +83,11 @@ public class CryptocurrencyFacadeREST extends AbstractFacade<Cryptocurrency> {
     }
 
     @GET
+    @Override
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
+    public int count() {
+        return super.count();
     }
 
     @Override

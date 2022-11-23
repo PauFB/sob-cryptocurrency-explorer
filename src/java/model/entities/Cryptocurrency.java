@@ -1,6 +1,5 @@
 package model.entities;
 
-import jakarta.persistence.Column;
 import java.util.ArrayList;
 import java.util.Collection;
 import jakarta.persistence.Entity;
@@ -8,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
@@ -16,8 +16,14 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 @Entity
-@NamedQuery(name="Cryptocurrency.findCryptocurrencyById",
-            query="SELECT c FROM Cryptocurrency c WHERE c.id = :id")
+@NamedQueries({
+    @NamedQuery(name = "Cryptocurrency.findCryptocurrencyById",
+            query = "SELECT c FROM Cryptocurrency c WHERE c.id = :id"),
+    @NamedQuery(name = "Cryptocurrency.findAllPriceAscending",
+            query = "SELECT c FROM Cryptocurrency c ORDER BY c.price ASC"),
+    @NamedQuery(name = "Cryptocurrency.findAllPriceDescending",
+            query = "SELECT c FROM Cryptocurrency c ORDER BY c.price DESC")
+})
 @XmlRootElement
 public class Cryptocurrency implements java.io.Serializable {
 
@@ -27,12 +33,21 @@ public class Cryptocurrency implements java.io.Serializable {
     @SequenceGenerator(name = "Cryptocurrency_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Cryptocurrency_Gen")
     private int id;
+    
     private String description;
+    
+    @NotNull
     private String name;
+    
+    @NotNull
     private double price;
+    
+    @NotNull
     private Date priceTimestamp;
+    
     @ManyToMany
     private Collection<Customer> customers;
+    
     @OneToMany(mappedBy = "cryptocurrency")
     private Collection<Purchase> purchases;
 
@@ -91,7 +106,7 @@ public class Cryptocurrency implements java.io.Serializable {
     public void addCustomer(Customer customer) {
         this.customers.add(customer);
     }
-    
+
     public void addPurchase(Purchase purchase) {
         this.purchases.add(purchase);
     }

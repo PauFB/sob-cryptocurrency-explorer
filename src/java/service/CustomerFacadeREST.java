@@ -15,15 +15,10 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.entities.Customer;
 import authn.Secured;
-import com.google.gson.Gson;
 import com.sun.xml.messaging.saaj.util.Base64;
-import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.core.Response;
 import java.util.StringTokenizer;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONException;
 
 @Stateless
 @Path("customer")
@@ -38,7 +33,7 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
 
     @POST
     @Override
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Customer entity) {
         super.create(entity);
     }
@@ -49,17 +44,12 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response updateCustomerInfo(@HeaderParam("Authorization") String auth, @PathParam("id") int id, Customer entity) {
         auth = auth.replace("Basic ", "");
-        String decode = Base64.base64Decode(auth);
-        StringTokenizer tokenizer = new StringTokenizer(decode, ":");
-        String email = tokenizer.nextToken();
-        
+        String email = new StringTokenizer(Base64.base64Decode(auth), ":").nextToken();
         Customer cust = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class)
                 .setParameter("email", email)
                 .getSingleResult();
-        
         if (id != cust.getId())
-            return Response.status(Response.Status.FORBIDDEN).build();
-        
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         if (entity.getEmail() != null) {
             cust.setEmail(entity.getEmail());
         }
@@ -83,42 +73,16 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @GET
     @Secured
     @Path("{id}")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response find(@PathParam("id") int id) {
-        Customer customer = super.find(id);
-        JSONObject response = getJsonObjectWithoutPassword(customer);
-        return Response.ok().entity(response.toString()).build();
-    }
-
-    private JSONObject getJsonObjectWithoutPassword(Customer customer) {
-        String jsonString = new Gson().toJson(customer);
-        JSONObject request;
-        try {
-            request = new JSONObject(jsonString);
-            request.remove("password");
-        } catch (JSONException e) {
-            return null;
-        }
-        return request;
-    }
-
-    @Override
-    public List<Customer> findAll() {
-        return em.createNamedQuery("Customer.findAll", Customer.class).getResultList();
+        return Response.ok().entity(super.find(id)).build();
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public String findAllWithoutPasswords() {
-        List<Customer> customerList = super.findAll();
-        JSONObject actualCustomer;
-        JSONArray jsonArray = new JSONArray();
-        for (Customer cust : customerList) {
-            actualCustomer = getJsonObjectWithoutPassword(cust);
-            actualCustomer.remove("password");
-            jsonArray.put(actualCustomer);
-        }
-        return jsonArray.toString();
+    @Override
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Customer> findAll() {
+        return super.findAll();
     }
 
     @GET
@@ -129,10 +93,11 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     }
 
     @GET
+    @Override
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
+    public int count() {
+        return super.count();
     }
 
     @Override

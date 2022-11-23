@@ -38,33 +38,29 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
 
     @POST
     @Secured
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response createPurchase(@HeaderParam("Authorization") String auth, @QueryParam("cryptocurrency") int cryptocurrencyId, Purchase entity) {
         auth = auth.replace("Basic ", "");
-        String decode = Base64.base64Decode(auth);
-        StringTokenizer tokenizer = new StringTokenizer(decode, ":");
-        String email = tokenizer.nextToken();
-  
+        String email = new StringTokenizer(Base64.base64Decode(auth), ":").nextToken();
         try {
             Customer customer = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class)
                     .setParameter("email", email)
                     .getSingleResult();
-            
             Cryptocurrency cryptocurrency = em.createNamedQuery("Cryptocurrency.findCryptocurrencyById", Cryptocurrency.class)
                     .setParameter("id", cryptocurrencyId)
                     .getSingleResult();
-            
             entity.setCryptocurrency(cryptocurrency);
             entity.setCustomer(customer);
             entity.setDate(new Date());
-            super.create(entity);
+            em.persist(entity);
+            entity.setPrice(entity.getPurchasedAmount() * cryptocurrency.getPrice());
         } catch (NoResultException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
         return Response.ok(entity).build();
     }
-    
+
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -101,10 +97,11 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
     }
 
     @GET
+    @Override
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
+    public int count() {
+        return super.count();
     }
 
     @Override
