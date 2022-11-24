@@ -58,7 +58,7 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
         } catch (NoResultException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        return Response.ok(entity).build();
+        return Response.ok().entity(entity).build();
     }
 
     @PUT

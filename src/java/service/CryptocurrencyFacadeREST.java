@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.MediaType;
 import model.entities.Cryptocurrency;
 import authn.Secured;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
 
 @Stateless
@@ -50,7 +51,6 @@ public class CryptocurrencyFacadeREST extends AbstractFacade<Cryptocurrency> {
     }
 
     @GET
-    @Secured
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response find(@PathParam("id") int id) {
@@ -72,7 +72,7 @@ public class CryptocurrencyFacadeREST extends AbstractFacade<Cryptocurrency> {
                 else
                     return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        return Response.ok(resultList).build();
+        return Response.ok().entity(new GenericEntity<List<Cryptocurrency>>(resultList) {}).build();
     }
 
     @GET
