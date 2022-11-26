@@ -70,7 +70,10 @@ public class RESTRequestFilter implements ContainerRequestFilter {
                         TypedQuery<Customer> query = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class);
                         Customer c = query.setParameter("email", username)
                             .getSingleResult();
-                        if(!c.getPassword().equals(password)) {
+                        Credentials credentials = em.createNamedQuery("Credentials.findCredentialsByCustomerId", Credentials.class)
+                                .setParameter("customerId", c.getId())
+                                .getSingleResult();
+                        if(!credentials.getPassword().equals(password)) {
                             requestCtx.abortWith(
                                 Response.status(Response.Status.FORBIDDEN).build()
                             );

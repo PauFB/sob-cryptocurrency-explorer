@@ -1,5 +1,6 @@
 package service;
 
+import authn.Credentials;
 import java.util.List;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -32,17 +33,20 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     }
 
     @POST
-    @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Customer entity) {
-        super.create(entity);
+    public void create(Customer customerEntity, Credentials credentialsEntity) {
+        Credentials cred = new Credentials();
+        cred.setCustomer(customerEntity);
+        cred.setPassword(credentialsEntity.getPassword());
+        em.persist(cred);
+        super.create(customerEntity);
     }
 
     @PUT
     @Secured
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response updateCustomerInfo(@HeaderParam("Authorization") String auth, @PathParam("id") int id, Customer entity) {
+    public Response updateCustomerInfo(@HeaderParam("Authorization") String auth, @PathParam("id") int id, Customer customerEntity, Credentials credentialsEntity) {
         auth = auth.replace("Basic ", "");
         String email = new StringTokenizer(Base64.base64Decode(auth), ":").nextToken();
         Customer cust = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class)
@@ -50,16 +54,19 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
                 .getSingleResult();
         if (id != cust.getId())
             return Response.status(Response.Status.UNAUTHORIZED).build();
-        if (entity.getEmail() != null) {
-            cust.setEmail(entity.getEmail());
+        if (customerEntity.getEmail() != null)
+            cust.setEmail(customerEntity.getEmail());
+        if (customerEntity.getName() != null)
+            cust.setName(customerEntity.getName());
+        if (credentialsEntity.getPassword() != null) {
+            Credentials cred = em.createNamedQuery("Credentials.findCredentialsByCustomerId", Credentials.class)
+                    .setParameter("customerId", id)
+                    .getSingleResult();
+            cred.setPassword(credentialsEntity.getPassword());
+            em.persist(cred);
         }
-        if (entity.getName() != null)
-            cust.setName(entity.getName());
-        if (entity.getPassword() != null) {
-            cust.setPassword(entity.getPassword());
-        }
-        if (entity.getPhone() != null)
-            cust.setPhone(entity.getPhone());
+        if (customerEntity.getPhone() != null)
+            cust.setPhone(customerEntity.getPhone());
         em.persist(cust);
         return Response.status(Response.Status.OK).build();
     }

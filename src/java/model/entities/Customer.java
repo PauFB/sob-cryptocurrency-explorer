@@ -1,7 +1,6 @@
 package model.entities;
 
-import adapter.StringXmlAdapter;
-import jakarta.json.bind.annotation.JsonbTransient;
+import authn.Credentials;
 import jakarta.persistence.Column;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,10 +12,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @Entity
 @NamedQueries({
@@ -43,11 +42,11 @@ public class Customer implements java.io.Serializable {
     
     @NotNull
     private String name;
-    
-    @NotNull
-    private String password;
-    
+
     private String phone;
+    
+    @OneToOne(mappedBy = "customer")
+    private Credentials credentials;
     
     @ManyToMany(mappedBy = "customers")
     final private Collection<Cryptocurrency> cryptocurrencies;
@@ -60,10 +59,9 @@ public class Customer implements java.io.Serializable {
         this.cryptocurrencies = new ArrayList<>();
     }
 
-    public Customer(String name, String email, String password, String phone) {
+    public Customer(String name, String email, String phone) {
         this.name = name;
         this.email = email;
-        this.password = password;
         this.phone = phone;
         this.purchases = new ArrayList<>();
         this.cryptocurrencies = new ArrayList<>();
@@ -93,16 +91,6 @@ public class Customer implements java.io.Serializable {
         this.name = name;
     }
 
-    @XmlJavaTypeAdapter(StringXmlAdapter.class)
-    @JsonbTransient
-    public String getPassword() {
-        return this.password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getPhone() {
         return this.phone;
     }
@@ -121,7 +109,7 @@ public class Customer implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return ("Name: " + this.name + " Email: " + this.email + " Password: " + this.password + " Phone:" + this.phone);
+        return ("Name: " + this.name + " Email: " + this.email + " Phone:" + this.phone);
     }
 
 }
