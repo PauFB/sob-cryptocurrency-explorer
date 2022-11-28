@@ -35,19 +35,19 @@ public class Cryptocurrency implements java.io.Serializable {
     private int id;
     
     private String description;
-    
+
     @NotNull
     private String name;
-    
+
     @NotNull
     private double price;
-    
+
     @NotNull
     private Date priceTimestamp;
-    
+
     @ManyToMany
     private Collection<Customer> customers;
-    
+
     @OneToMany(mappedBy = "cryptocurrency")
     private Collection<Purchase> purchases;
 
@@ -71,20 +71,20 @@ public class Cryptocurrency implements java.io.Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getDescription() {
         return this.description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getPrice() {

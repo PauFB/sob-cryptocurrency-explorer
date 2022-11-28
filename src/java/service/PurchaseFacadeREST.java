@@ -1,5 +1,6 @@
 package service;
 
+import authn.Secured;
 import java.util.List;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -14,12 +15,14 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.entities.Purchase;
-import authn.Secured;
 import com.sun.xml.messaging.saaj.util.Base64;
+import exception.CustomException;
 import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.Date;
 import java.util.StringTokenizer;
 import model.entities.Cryptocurrency;
@@ -40,7 +43,10 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
     @Secured
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response createPurchase(@HeaderParam("Authorization") String auth, @QueryParam("cryptocurrency") int cryptocurrencyId, Purchase entity) {
+    public Response createPurchase(@Context UriInfo uriInfo,
+                                   @HeaderParam("Authorization") String auth,
+                                   @QueryParam("cryptocurrency") int cryptocurrencyId,
+                                   Purchase entity) {
         auth = auth.replace("Basic ", "");
         String email = new StringTokenizer(Base64.base64Decode(auth), ":").nextToken();
         try {
@@ -55,8 +61,9 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
             entity.setDate(new Date());
             em.persist(entity);
             entity.setPrice(entity.getPurchasedAmount() * cryptocurrency.getPrice());
+            em.persist(cryptocurrency);
         } catch (NoResultException e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            throw new CustomException(Response.Status.BAD_REQUEST, "Invalid cryptocurrency ID", uriInfo.getPath());
         }
         return Response.ok().entity(entity).build();
     }

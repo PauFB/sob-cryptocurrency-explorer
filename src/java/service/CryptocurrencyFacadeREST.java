@@ -1,8 +1,10 @@
 package service;
 
+import exception.CustomException;
 import java.util.List;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -13,11 +15,13 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import model.entities.Cryptocurrency;
-import authn.Secured;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+import model.entities.Purchase;
+import model.entities.Cryptocurrency;
 
 @Stateless
 @Path("cryptocurrency")
@@ -53,24 +57,33 @@ public class CryptocurrencyFacadeREST extends AbstractFacade<Cryptocurrency> {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response find(@PathParam("id") int id) {
-        return Response.ok().entity(super.find(id)).build();
+    public Response find(@Context UriInfo uriInfo, @PathParam("id") int id) {
+        try {
+            Purchase purchase = em.createNamedQuery("Purchase.findPurchasesByCryptocurrencyId", Purchase.class)
+                    .setParameter("cryptocurrencyId", id)
+                    .setFirstResult(0)
+                    .setMaxResults(1)
+                    .getSingleResult();
+            return Response.ok().entity(purchase).build();
+        } catch (NoResultException e) {
+            throw new CustomException(Response.Status.NOT_FOUND, "Specified cryptocurrency has no purchases", uriInfo.getPath());
+        }
     }
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response findAll(@QueryParam("order") String order) {
+    public Response findAll(@Context UriInfo uriInfo, @QueryParam("order") String order) {
         List<Cryptocurrency> resultList;
-        if (order == null)
+        if (order == null) {
             resultList = super.findAll();
-        else {
-            if (order.equalsIgnoreCase("asc"))
+        } else {
+            if (order.equalsIgnoreCase("asc")) {
                 resultList = em.createNamedQuery("Cryptocurrency.findAllPriceAscending", Cryptocurrency.class).getResultList();
-            else
-                if (order.equalsIgnoreCase("desc"))
-                    resultList = em.createNamedQuery("Cryptocurrency.findAllPriceDescending", Cryptocurrency.class).getResultList();
-                else
-                    return Response.status(Response.Status.BAD_REQUEST).build();
+            } else if (order.equalsIgnoreCase("desc")) {
+                resultList = em.createNamedQuery("Cryptocurrency.findAllPriceDescending", Cryptocurrency.class).getResultList();
+            } else {
+                throw new CustomException(Response.Status.BAD_REQUEST, "Invalid order", uriInfo.getPath());
+            }
         }
         return Response.ok().entity(new GenericEntity<List<Cryptocurrency>>(resultList) {}).build();
     }

@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +14,10 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "Purchase.findPurchasesByCryptocurrencyId",
+            query = "SELECT p FROM Purchase p WHERE p.cryptocurrency.id = :cryptocurrencyId ORDER BY p.date DESC"),
+})
 @XmlRootElement
 public class Purchase implements java.io.Serializable {
 
@@ -21,21 +27,21 @@ public class Purchase implements java.io.Serializable {
     @SequenceGenerator(name = "Purchase_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Purchase_Gen")
     private int id;
-    
+
     @NotNull
     private double purchasedAmount;
-    
+
     @NotNull
     private Date date;
-    
+
     @ManyToOne
     @NotNull
     private Cryptocurrency cryptocurrency;
-    
+
     @ManyToOne
     @NotNull
     private Customer customer;
-    
+
     @Transient
     private double price;
 
@@ -90,7 +96,7 @@ public class Purchase implements java.io.Serializable {
     }
 
     public double getPrice() {
-        return price;
+        return this.price;
     }
 
     public void setPrice(double price) {

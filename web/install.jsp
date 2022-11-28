@@ -41,6 +41,9 @@
                 "INSERT INTO " + schema + ".CRYPTOCURRENCY VALUES (NEXT VALUE FOR CRYPTOCURRENCY_GEN, 'Generic description.', 'Bitcoin', 15000.0, '2000-1-1-12.00.00.000000')",
                 "INSERT INTO " + schema + ".CRYPTOCURRENCY VALUES (NEXT VALUE FOR CRYPTOCURRENCY_GEN, 'Generic description.', 'GMX', 40.0, '2000-1-1-12.00.00.000000')",
                 "INSERT INTO " + schema + ".CRYPTOCURRENCY VALUES (NEXT VALUE FOR CRYPTOCURRENCY_GEN, 'Generic description.', 'Ethereum', 1000.0, '2000-1-1-12.00.00.000000')",
+                "INSERT INTO " + schema + ".PURCHASE VALUES (NEXT VALUE FOR PURCHASE_GEN, '2000-1-1-12.00.00.000000', 1.0, 1, 1)",
+                "INSERT INTO " + schema + ".PURCHASE VALUES (NEXT VALUE FOR PURCHASE_GEN, '2000-1-1-12.00.00.000000', 1.0, 2, 1)",
+                "INSERT INTO " + schema + ".PURCHASE VALUES (NEXT VALUE FOR PURCHASE_GEN, '2000-1-1-12.00.00.000000', 1.0, 3, 1)"
             };
             for (String datum : data) {
                 if (stmt.executeUpdate(datum)<=0) {

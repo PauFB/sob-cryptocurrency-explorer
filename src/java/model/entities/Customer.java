@@ -1,9 +1,8 @@
 package model.entities;
 
-import authn.Credentials;
-import jakarta.persistence.Column;
 import java.util.ArrayList;
 import java.util.Collection;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,8 +11,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -35,22 +34,22 @@ public class Customer implements java.io.Serializable {
     @SequenceGenerator(name = "Customer_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Customer_Gen")
     private int id;
-    
+
     @Column(unique = true)
     @NotNull
     private String email;
-    
+
     @NotNull
     private String name;
+    
+    @Transient
+    private String password;
 
     private String phone;
-    
-    @OneToOne(mappedBy = "customer")
-    private Credentials credentials;
-    
+
     @ManyToMany(mappedBy = "customers")
     final private Collection<Cryptocurrency> cryptocurrencies;
-    
+
     @OneToMany(mappedBy = "customer")
     final private Collection<Purchase> purchases;
 
@@ -89,6 +88,14 @@ public class Customer implements java.io.Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPhone() {

@@ -1,6 +1,7 @@
 package service;
 
 import authn.RESTRequestFilter;
+import exception.CustomExceptionMapper;
 import jakarta.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +17,7 @@ public class RESTappV2 extends Application {
         classes.add(CustomerFacadeREST.class);
         classes.add(PurchaseFacadeREST.class);
         classes.add(RESTRequestFilter.class);
+        classes.add(CustomExceptionMapper.class);
         classes.add(HelloWorldResourceV2.class);
         return classes;
     }

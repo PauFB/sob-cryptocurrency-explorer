@@ -1,6 +1,7 @@
 package service;
 
 import authn.Credentials;
+import authn.Secured;
 import java.util.List;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -15,10 +16,12 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.entities.Customer;
-import authn.Secured;
 import com.sun.xml.messaging.saaj.util.Base64;
+import exception.CustomException;
 import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.StringTokenizer;
 
 @Stateless
@@ -33,42 +36,54 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     }
 
     @POST
+    @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Customer customerEntity, Credentials credentialsEntity) {
+    public void create(Customer entity) {
+        Customer cust = new Customer();
+        cust.setEmail(entity.getEmail());
+        cust.setName(entity.getName());
+        cust.setPhone(entity.getPhone());
         Credentials cred = new Credentials();
-        cred.setCustomer(customerEntity);
-        cred.setPassword(credentialsEntity.getPassword());
+        cred.setCustomer(cust);
+        cred.setPassword(entity.getPassword());
+        em.persist(cust);
         em.persist(cred);
-        super.create(customerEntity);
     }
 
     @PUT
     @Secured
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response updateCustomerInfo(@HeaderParam("Authorization") String auth, @PathParam("id") int id, Customer customerEntity, Credentials credentialsEntity) {
+    public Response updateCustomerInfo(@Context UriInfo uriInfo,
+                                       @HeaderParam("Authorization") String auth,
+                                       @PathParam("id") int id,
+                                       Customer entity) {
         auth = auth.replace("Basic ", "");
         String email = new StringTokenizer(Base64.base64Decode(auth), ":").nextToken();
-        Customer cust = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class)
+        Customer authorizedCustomer = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class)
                 .setParameter("email", email)
                 .getSingleResult();
-        if (id != cust.getId())
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        if (customerEntity.getEmail() != null)
-            cust.setEmail(customerEntity.getEmail());
-        if (customerEntity.getName() != null)
-            cust.setName(customerEntity.getName());
-        if (credentialsEntity.getPassword() != null) {
+        if (id != authorizedCustomer.getId()) {
+            throw new CustomException(Response.Status.FORBIDDEN, "Specified ID does not match authorized customer", uriInfo.getPath());
+        }
+        if (entity.getEmail() != null) {
+            authorizedCustomer.setEmail(entity.getEmail());
+        }
+        if (entity.getName() != null) {
+            authorizedCustomer.setName(entity.getName());
+        }
+        if (entity.getPassword() != null) {
             Credentials cred = em.createNamedQuery("Credentials.findCredentialsByCustomerId", Credentials.class)
                     .setParameter("customerId", id)
                     .getSingleResult();
-            cred.setPassword(credentialsEntity.getPassword());
+            cred.setPassword(entity.getPassword());
             em.persist(cred);
         }
-        if (customerEntity.getPhone() != null)
-            cust.setPhone(customerEntity.getPhone());
-        em.persist(cust);
-        return Response.status(Response.Status.OK).build();
+        if (entity.getPhone() != null) {
+            authorizedCustomer.setPhone(entity.getPhone());
+        }
+        em.persist(authorizedCustomer);
+        return Response.ok().build();
     }
 
     @DELETE
@@ -78,7 +93,6 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     }
 
     @GET
-    @Secured
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response find(@PathParam("id") int id) {
