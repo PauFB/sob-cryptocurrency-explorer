@@ -21,6 +21,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.Date;
@@ -65,7 +66,7 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
         } catch (NoResultException e) {
             throw new CustomException(Response.Status.BAD_REQUEST, "Invalid cryptocurrency ID", uriInfo.getPath());
         }
-        return Response.ok().entity(entity).build();
+        return Response.status(Response.Status.CREATED).entity(entity).build();
     }
 
     @PUT
@@ -85,15 +86,21 @@ public class PurchaseFacadeREST extends AbstractFacade<Purchase> {
     @Secured
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response find(@PathParam("id") int id) {
+    public Response find(@Context UriInfo uriInfo,
+                         @PathParam("id") int id) {
+        Purchase purchase = super.find(id);
+        if (purchase == null)
+            throw new CustomException(Response.Status.NOT_FOUND, "Invalid purchase ID", uriInfo.getPath());
         return Response.ok().entity(super.find(id)).build();
     }
 
     @GET
-    @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Purchase> findAll() {
-        return super.findAll();
+    public Response findAllPurchases() {
+        List<Purchase> resultList = super.findAll();
+        if (resultList.isEmpty())
+            return Response.status(Response.Status.NO_CONTENT).build();
+        return Response.ok().entity(new GenericEntity<List<Purchase>>(resultList) {}).build();
     }
 
     @GET

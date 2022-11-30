@@ -66,7 +66,7 @@ public class CryptocurrencyFacadeREST extends AbstractFacade<Cryptocurrency> {
                     .getSingleResult();
             return Response.ok().entity(purchase).build();
         } catch (NoResultException e) {
-            throw new CustomException(Response.Status.NOT_FOUND, "Specified cryptocurrency has no purchases", uriInfo.getPath());
+            throw new CustomException(Response.Status.NOT_FOUND, "Invalid cryptocurrency ID", uriInfo.getPath());
         }
     }
 
@@ -77,14 +77,19 @@ public class CryptocurrencyFacadeREST extends AbstractFacade<Cryptocurrency> {
         if (order == null) {
             resultList = super.findAll();
         } else {
-            if (order.equalsIgnoreCase("asc")) {
-                resultList = em.createNamedQuery("Cryptocurrency.findAllPriceAscending", Cryptocurrency.class).getResultList();
-            } else if (order.equalsIgnoreCase("desc")) {
-                resultList = em.createNamedQuery("Cryptocurrency.findAllPriceDescending", Cryptocurrency.class).getResultList();
-            } else {
-                throw new CustomException(Response.Status.BAD_REQUEST, "Invalid order", uriInfo.getPath());
+            switch (order) {
+                case "asc":
+                    resultList = em.createNamedQuery("Cryptocurrency.findAllPriceAscending", Cryptocurrency.class).getResultList();
+                    break;
+                case "desc":
+                    resultList = em.createNamedQuery("Cryptocurrency.findAllPriceDescending", Cryptocurrency.class).getResultList();
+                    break;
+                default:
+                    throw new CustomException(Response.Status.BAD_REQUEST, "Invalid order", uriInfo.getPath());
             }
         }
+        if (resultList.isEmpty())
+            return Response.status(Response.Status.NO_CONTENT).build();
         return Response.ok().entity(new GenericEntity<List<Cryptocurrency>>(resultList) {}).build();
     }
 

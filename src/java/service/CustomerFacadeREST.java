@@ -20,6 +20,7 @@ import com.sun.xml.messaging.saaj.util.Base64;
 import exception.CustomException;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.StringTokenizer;
@@ -36,9 +37,8 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     }
 
     @POST
-    @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Customer entity) {
+    public Response createCustomer(Customer entity) {
         Customer cust = new Customer();
         cust.setEmail(entity.getEmail());
         cust.setName(entity.getName());
@@ -48,6 +48,7 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
         cred.setPassword(entity.getPassword());
         em.persist(cust);
         em.persist(cred);
+        return Response.status(Response.Status.CREATED).build();
     }
 
     @PUT
@@ -96,14 +97,19 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response find(@PathParam("id") int id) {
+        Customer customer = super.find(id);
+        if (customer == null)
+            return Response.status(Response.Status.NO_CONTENT).build();
         return Response.ok().entity(super.find(id)).build();
     }
 
     @GET
-    @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Customer> findAll() {
-        return super.findAll();
+    public Response findAllCustomers() {
+        List<Customer> resultList = super.findAll();
+        if (resultList.isEmpty())
+            return Response.status(Response.Status.NO_CONTENT).build();
+        return Response.ok().entity(new GenericEntity<List<Customer>>(resultList) {}).build();
     }
 
     @GET
