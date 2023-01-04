@@ -126,6 +126,18 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     public int count() {
         return super.count();
     }
+    
+    @GET
+    @Path("validate")
+    @Secured
+    public Integer validateCustomer(@HeaderParam("Authorization") String auth) {
+        auth = auth.replace("Basic ", "");
+        String email = new StringTokenizer(Base64.base64Decode(auth), ":").nextToken();
+        Customer authorizedCustomer = em.createNamedQuery("Customer.findCustomerByEmail", Customer.class)
+                .setParameter("email", email)
+                .getSingleResult();
+        return authorizedCustomer.getId();
+    }
 
     @Override
     protected EntityManager getEntityManager() {
