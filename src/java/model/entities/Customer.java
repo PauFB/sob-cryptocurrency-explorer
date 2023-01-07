@@ -23,7 +23,9 @@ import jakarta.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Customer.findCustomerById",
             query = "SELECT c FROM Customer c WHERE c.id = :id"),
     @NamedQuery(name = "Customer.findAll",
-            query = "SELECT c.id, c.email, c.name, c.phone FROM Customer c")
+            query = "SELECT c.id, c.email, c.name, c.phone FROM Customer c"),
+    @NamedQuery(name = "Customer.findPurchasesByEmail",
+            query = "SELECT p FROM Purchase p WHERE p.customer.email = :email")
 })
 @XmlRootElement
 public class Customer implements java.io.Serializable {

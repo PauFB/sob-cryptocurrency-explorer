@@ -24,6 +24,7 @@ import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.StringTokenizer;
+import model.entities.Purchase;
 
 @Stateless
 @Path("customer")
@@ -126,7 +127,7 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     public int count() {
         return super.count();
     }
-    
+
     @GET
     @Path("validate")
     @Secured
@@ -137,6 +138,21 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
                 .setParameter("email", email)
                 .getSingleResult();
         return authorizedCustomer.getId();
+    }
+
+    @GET
+    @Path("purchases")
+    @Secured
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response getCustomerPurchases(@HeaderParam("Authorization") String auth) {
+        auth = auth.replace("Basic ", "");
+        String email = new StringTokenizer(Base64.base64Decode(auth), ":").nextToken();
+        List<Purchase> resultList = em.createNamedQuery("Customer.findPurchasesByEmail", Purchase.class)
+                .setParameter("email", email)
+                .getResultList();
+        if (resultList.isEmpty())
+            return Response.status(Response.Status.NO_CONTENT).build();
+        return Response.ok().entity(new GenericEntity<List<Purchase>>(resultList) {}).build();
     }
 
     @Override
