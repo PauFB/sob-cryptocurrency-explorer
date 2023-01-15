@@ -49,7 +49,9 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
         cred.setPassword(entity.getPassword());
         em.persist(cust);
         em.persist(cred);
-        return Response.status(Response.Status.CREATED).build();
+        return Response.status(Response.Status.CREATED)
+                .entity(cust.getId())
+                .build();
     }
 
     @PUT
